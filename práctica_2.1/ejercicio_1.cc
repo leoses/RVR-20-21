@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     //Gestion de errores
     if (rcv != 0)
     {
-        std::cerr << "Fallo despues de la llamada de [getaddrinfo]\n";
+        fprintf(stderr, "Error: %s\n", gai_strerror(rcv));
         return -1;
     }
 
