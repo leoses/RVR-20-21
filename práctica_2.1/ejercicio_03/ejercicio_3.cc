@@ -50,19 +50,31 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    //Asignamos el addr al socket
-    if (bind(sd, res->ai_addr, res->ai_addrlen) == -1)
-    {
-        std::cerr << "Error en la llamada a [bind]\n";
-        return EXIT_FAILURE;
-    }
-
     //Liberamos memoria de la lista puesto que ya no es necesaria
     freeaddrinfo(res);
 
     char buffer[MESSAGE_MAX_SIZE];
 
-    
+    //Enviamos información esperando recibir respuesta
+    ssize_t sendInfo = sendto(sd, argv[3], strlen(argv[3])+1, 0, res->ai_addr, res->ai_addrlen);
+
+    if(sendInfo == -1){
+        std::cerr << "Error en el envío de información al servidor [sendTo]\n";
+        return EXIT_FAILURE;
+    }
+
+    ssize_t bytes = recvfrom(sd, buffer, (MESSAGE_MAX_SIZE - 1) * sizeof(char), 0, res->ai_addr, &res->ai_addrlen);
+
+    //Gestion de errores del recvFrom
+    if(bytes == -1){
+        std::cerr << "Error en la recepción bytes de [recvfrom]\n";
+        return EXIT_FAILURE;
+    }
+
+    std::cout << buffer << "\n";
+
+    //Cerramos socket
+    close(sd);
 
     return 0;
 }

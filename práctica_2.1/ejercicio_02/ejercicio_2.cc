@@ -105,11 +105,14 @@ int main(int argc, char **argv)
         case 'q':
             std::cout << "Saliendo...\n";
             serverActive = false;
+            sendto(sd, "Usted ha cerrado el servidor\n", 30, 0, &client, clientLength);
             break;
 
         //Comando desconocido
         default:
             std::cout << "Comando no soportado: " << buffer[0] << "\n";
+            sendto(sd, "Comando no valido\n", 19, 0, &client, clientLength);
+
         }
     }
 
