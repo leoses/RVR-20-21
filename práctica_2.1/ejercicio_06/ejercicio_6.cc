@@ -42,6 +42,17 @@ public:
 
             int bytesReceived = recvfrom(sd, (void *)buffer, (MESSAGE_MAX_SIZE - 1) * sizeof(char), 0, &client, &clientLength);
             buffer[MESSAGE_MAX_SIZE] = '\0';
+            
+            int i = 0;
+
+            /*------Para comprobar si se entremezclan los threads
+            while(i < 20){
+                std::cout << i << " Thread:"<< std::this_thread::get_id()<<"\n";
+                i++;
+                sleep(1);
+            }
+            */
+            
 
             if (bytesReceived == -1)
             {
@@ -89,7 +100,7 @@ int main(int argc, char **argv)
     //Corrección parametros de entrada usuario
     if (argc != 3)
     {
-        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_2 <direccion> <puerto>\n ";
+        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_6 <direccion> <puerto>\n ";
         return EXIT_FAILURE;
     }
 
@@ -135,7 +146,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < MAX_THREADS; i++)
     {
         MessageThread *m = new MessageThread(sd, i);
-        std::thread([&m]() {m->haz_mensaje(); delete m; }).detach();
+        std::thread([&m]() {m->haz_mensaje(); delete m; });
     }
 
     //El thread principal es el que procesa el cierre del servidor cuando

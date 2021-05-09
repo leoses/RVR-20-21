@@ -98,5 +98,8 @@ int main(int argc, char **argv)
     //Cerrar socket del cliente
     close(cliente_sd);
 
+    //Cerrar socket servidor
+    close(sd);
+
     return 0;
 }
