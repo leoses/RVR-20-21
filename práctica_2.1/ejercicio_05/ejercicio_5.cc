@@ -1,24 +1,19 @@
 #include <netdb.h>
 #include <iostream>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 //Sockets
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
-
-/*
-Formato de comando esperado: ./ejercicio_3 127.0.0.1 3000 t
-*/
 
 const size_t MESSAGE_MAX_SIZE = 100;
 
 int main(int argc, char **argv)
 {
-    if(argc != 4){
-        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_3 <direccion> <puerto> <comando>\n ";
+    if (argc != 3)
+    {
+        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_5 <direccion> <puerto> \n ";
         return EXIT_FAILURE;
     }
 
@@ -28,8 +23,8 @@ int main(int argc, char **argv)
     //Memoria reservada para el struct con "los filtros" para las conexiones
     memset((void *)&hints, 0, sizeof(struct addrinfo));
 
-    hints.ai_family = AF_INET;      //IPv4
-    hints.ai_socktype = SOCK_DGRAM; //UDP
+    hints.ai_family = AF_INET;       //IPv4
+    hints.ai_socktype = SOCK_STREAM; //TCP
 
     //Cogemos en res todas las conexiones que cumplen los filtros
     int rcv = getaddrinfo(argv[1], argv[2], &hints, &res);
@@ -53,24 +48,40 @@ int main(int argc, char **argv)
     //Liberamos memoria de la lista puesto que ya no es necesaria
     freeaddrinfo(res);
 
+    int sd_servidor = connect(sd, (struct sockaddr *)res->ai_addr, res->ai_addrlen);
+
+    if (sd_servidor == -1)
+    {
+        std::cerr << "No ha sido posible conectarse al servidor [connect]\n";
+        return EXIT_FAILURE;
+    }
+
+    bool connected = true;
     char buffer[MESSAGE_MAX_SIZE];
 
-    //Enviamos información esperando recibir respuesta
-    if(sendto(sd, argv[3], strlen(argv[3])+1, 0, res->ai_addr, res->ai_addrlen) == -1){
-        std::cerr << "Error en el envío de información al servidor [sendTo]\n";
-        return EXIT_FAILURE;
+    while (connected)
+    {
+        //Leemos informacion de consola
+        std::cin >> buffer;
+
+        //La enviamos al servidor
+        send(sd_servidor, buffer, (MESSAGE_MAX_SIZE - 1)*sizeof(char), 0);
+
+        //Si pulsamos Q cerramos la conexion
+        if (buffer[0] == 'Q' && buffer[1] == '\0')
+        {
+            connected = false;
+            continue;
+        }
+
+        //Recibimos la respuesta (echo) del servidor
+        recv(sd_servidor, buffer,(MESSAGE_MAX_SIZE - 1)*sizeof(char),0);
+
+        //La mostramos por pantalla
+        std::cout << buffer << '\n';
     }
 
-    //Recibimos mensaje del servidor
-    if(recvfrom(sd, buffer, (MESSAGE_MAX_SIZE - 1) * sizeof(char), 0, res->ai_addr, &res->ai_addrlen) == -1){
-        std::cerr << "Error en la recepción bytes de [recvfrom]\n";
-        return EXIT_FAILURE;
-    }
-
-    std::cout << buffer << "\n";
-
-    //Cerramos socket
+    //close(sd_servidor);
     close(sd);
-
     return 0;
 }

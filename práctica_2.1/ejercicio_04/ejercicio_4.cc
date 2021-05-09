@@ -1,7 +1,6 @@
 #include <netdb.h>
 #include <iostream>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 //Sockets
@@ -15,7 +14,7 @@ int main(int argc, char **argv)
     //Corrección parametros de entrada usuario
     if (argc != 3)
     {
-        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_2 <direccion> <puerto>\n ";
+        std::cerr << "Parámetros incorrectos\n Formato: .\ejercicio_4 <direccion> <puerto>\n ";
         return EXIT_FAILURE;
     }
 
@@ -55,9 +54,7 @@ int main(int argc, char **argv)
 
     //EL servidor se pone a escuchar en el socket
     //DE MOMENTO SOLO UNA CONEXION AL MISMO TIEMPO
-    int listenStatus = listen(sd, 1);
-
-    if(listenStatus == -1){
+    if(listen(sd, 1) == -1){
         std::cerr << "Fallo en el [listen]\n";
         return EXIT_FAILURE;
     }
@@ -98,8 +95,8 @@ int main(int argc, char **argv)
         send(cliente_sd, (void *) buffer, bytesRecieved, 0);
     }
 
-    //Cerrar servidor (como solo se conectará uno, en el momento que salga del while ya ha cumplido)
-    close(sd);
+    //Cerrar socket del cliente
+    close(cliente_sd);
 
     return 0;
 }
