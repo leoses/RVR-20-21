@@ -7,7 +7,6 @@
 //Sockets
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
 
 /*
 Formato de comando esperado: ./ejercicio_3 127.0.0.1 3000 t
