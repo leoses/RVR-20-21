@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+//Constantes
 const size_t MESSAGE_MAX_SIZE = 100;
 
 int main(int argc, char **argv)

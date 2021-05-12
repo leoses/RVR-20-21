@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+//Constantes
 const size_t MESSAGE_MAX_SIZE = 100;
 
 int main(int argc, char **argv)
@@ -95,10 +96,8 @@ int main(int argc, char **argv)
         send(cliente_sd, (void *) buffer, bytesRecieved, 0);
     }
 
-    //Cerrar socket del cliente
+    //Llamamos a close para cerrar los dos descriptores de fichero
     close(cliente_sd);
-
-    //Cerrar socket servidor
     close(sd);
 
     return 0;

@@ -12,9 +12,11 @@
 //Threads
 #include <thread>
 
+//Constantes
 const size_t MESSAGE_MAX_SIZE = 100;
 #define MAX_THREADS 5
 
+//Clase para gestionar los threads
 class MessageThread
 {
 private:
@@ -22,8 +24,10 @@ private:
     int id;
 
 public:
+    //Constructora 
     MessageThread(int sd_, int i_) : sd(sd_), id(i_) {}
 
+    //Metodo a realizar en los threads
     void haz_mensaje()
     {
         time_t rawtime;

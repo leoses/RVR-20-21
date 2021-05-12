@@ -13,14 +13,17 @@
 const size_t MESSAGE_MAX_SIZE = 100;
 #define MAX_LISTEN 5
 
+
+//Clase para gestionar los threads
 class MessageThread
 {
 private:
     int cliente_sd;
 
-
 public:
+    //Costructora
     MessageThread(int cliente) : cliente_sd(cliente) {}
+    //Método a llamar en los threads
     void conexion()
     {
         //FUNCIONALIDAD DEL SERVIDOR ECHO

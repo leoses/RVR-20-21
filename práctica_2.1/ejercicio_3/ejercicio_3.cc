@@ -12,6 +12,7 @@
 Formato de comando esperado: ./ejercicio_3 127.0.0.1 3000 t
 */
 
+//Constante
 const size_t MESSAGE_MAX_SIZE = 100;
 
 int main(int argc, char **argv)

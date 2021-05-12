@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+//Constante
 const size_t MESSAGE_MAX_SIZE = 100;
 
 int main(int argc, char **argv)
@@ -45,8 +46,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    //Liberamos memoria de la lista puesto que ya no es necesaria
-    freeaddrinfo(res);
 
     int sd_servidor = connect(sd, (struct sockaddr *)res->ai_addr, res->ai_addrlen);
 
@@ -55,6 +54,9 @@ int main(int argc, char **argv)
         std::cerr << "No ha sido posible conectarse al servidor [connect]\n";
         return EXIT_FAILURE;
     }
+
+    //Liberamos memoria de la lista puesto que ya no es necesaria
+    freeaddrinfo(res);
 
     bool connected = true;
     char buffer[MESSAGE_MAX_SIZE];
@@ -65,7 +67,7 @@ int main(int argc, char **argv)
         std::cin >> buffer;
 
         //La enviamos al servidor
-        send(sd_servidor, buffer, (MESSAGE_MAX_SIZE - 1)*sizeof(char), 0);
+        ssize_t bytesSend = send(sd_servidor, buffer, (MESSAGE_MAX_SIZE - 1)*sizeof(char), 0);
 
         //Si pulsamos Q cerramos la conexion
         if (buffer[0] == 'Q' && buffer[1] == '\0')
@@ -81,7 +83,9 @@ int main(int argc, char **argv)
         std::cout << buffer << '\n';
     }
 
-    //close(sd_servidor);
+    //Llamamos a close para cerrar los dos descriptores de fichero
+    close(sd_servidor);
     close(sd);
+
     return 0;
 }
