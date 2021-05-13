@@ -46,8 +46,6 @@ public:
 
             int bytesReceived = recvfrom(sd, (void *)buffer, (MESSAGE_MAX_SIZE - 1) * sizeof(char), 0, &client, &clientLength);
             buffer[MESSAGE_MAX_SIZE] = '\0';
-            
-            int i = 0;
 
             /*------Para comprobar si se entremezclan los threads
             while(i < 20){
@@ -143,14 +141,10 @@ int main(int argc, char **argv)
     //Liberamos memoria de la lista puesto que ya no es necesaria
     freeaddrinfo(res);
 
-    bool serverActive = true;
-
-    std::thread threads[MAX_THREADS];
-
     for (int i = 0; i < MAX_THREADS; i++)
     {
         MessageThread *m = new MessageThread(sd, i);
-        std::thread([&m]() {m->haz_mensaje(); delete m; });
+        std::thread([&m]() {m->haz_mensaje(); delete m; }).detach();
     }
 
     //El thread principal es el que procesa el cierre del servidor cuando
