@@ -65,8 +65,12 @@ public:
         return 0;
     }
 
-public:
+    int16_t getX() const{return x;}
+    int16_t getY() const{return y;}
     char name[MAX_NAME_LENGHT];
+
+
+private:
 
     int16_t x;
     int16_t y;
@@ -94,12 +98,13 @@ int main(int argc, char **argv)
         std::cerr << "Something wrong happened while reading: ./player1_data.txt\n";
         return -(EXIT_FAILURE);
     } 
+    close(fd);
 
     // 4. "Deserializar" en one_r
     one_r.from_bin(buffer);
     
     // 5. Mostrar el contenido de one_r
-    std::cout << "Nombre de one_r: " << one_r.name << ", x: " << one_r.x << ", y: " << one_r.y << "\n";
+    std::cout << "Nombre de one_r: " << one_r.name << ", x: " << one_r.getX() << ", y: " << one_r.getY() << "\n";
 
     return 0;
 }
