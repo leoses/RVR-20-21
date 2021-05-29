@@ -60,6 +60,8 @@ int Socket::recv(Serializable &obj, Socket * &sock)
         sock = new Socket(&sa, sa_len);
     }
 
+    std::cout << buffer << "\n";
+
     obj.from_bin(buffer);
 
     return 0;
@@ -75,6 +77,7 @@ int Socket::send(Serializable& obj, const Socket& sock)
 
     if ( bytes <= 0 )
     {
+        std::cout << "ERROR AL ENVIAR MENSAJE\n";
         return -1;
     }
 
@@ -100,6 +103,11 @@ bool operator== (const Socket &s1, const Socket &s2)
 
     //Si llegamos hasta aqui es que son iguales
     return true;
+};
+
+bool operator!= (const Socket &s1, const Socket &s2)
+{
+    return !(s1 == s2);
 };
 
 std::ostream& operator<<(std::ostream& os, const Socket& s)
