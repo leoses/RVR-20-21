@@ -41,6 +41,11 @@ Socket::Socket(const char * address, const char * port):sd(-1)
 
 }
 
+Socket::Socket(struct sockaddr * _sa, socklen_t _sa_len) : sd(-1), sa(*_sa),sa_len(_sa_len){
+	sd = socket(sa.sa_family,SOCK_DGRAM,0);
+	bind();
+};
+
 int Socket::recv(Serializable &obj, Socket * &sock)
 {
     struct sockaddr sa;
@@ -60,8 +65,6 @@ int Socket::recv(Serializable &obj, Socket * &sock)
         sock = new Socket(&sa, sa_len);
     }
 
-    std::cout << buffer << "\n";
-
     obj.from_bin(buffer);
 
     return 0;
@@ -77,7 +80,7 @@ int Socket::send(Serializable& obj, const Socket& sock)
 
     if ( bytes <= 0 )
     {
-        std::cout << "ERROR AL ENVIAR MENSAJE\n";
+        std::cerr << "ERROR AL ENVIAR MENSAJE\n";
         return -1;
     }
 

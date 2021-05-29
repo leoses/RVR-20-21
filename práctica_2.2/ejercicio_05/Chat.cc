@@ -13,39 +13,40 @@ void ChatMessage::to_bin()
     char *temp = _data;
 
     //Copiamos tipo de mensaje a partir de la direccion que marca temp
-    memcpy(temp, &type ,sizeof(uint8_t) );
-    temp+= sizeof(uint8_t);
+    memcpy(temp, &type, sizeof(uint8_t));
+    temp += sizeof(uint8_t);
 
     //Copiamos el nombre a partir de la direccion que marca temp
-    memcpy(temp, &nick ,sizeof(char)*8 );
-    temp+= sizeof(char)*8;
+    memcpy(temp, nick.c_str(), sizeof(char) * 8);
+    temp += sizeof(char) * 8;
 
     //Copiamos el mensaje a partir de la direccion que marca temp
-    memcpy(temp, &message ,sizeof(char)*80 );
-
-
+    memcpy(temp, message.c_str(), sizeof(char) * 80);
 }
 
-int ChatMessage::from_bin(char * bobj)
+int ChatMessage::from_bin(char *bobj)
 {
     alloc_data(MESSAGE_SIZE);
 
     memcpy(static_cast<void *>(_data), bobj, MESSAGE_SIZE);
 
     //Reconstruir la clase usando el buffer _data
-    char* temp = _data;
+    char *temp = _data;
 
-    memcpy(&type,&temp, sizeof(uint8_t));
+    //Copiamos tipo
+    memcpy(&type, temp, sizeof(uint8_t));
     temp += sizeof(uint8_t);
 
-    memcpy(&nick,&temp, sizeof(char)*8);
-    temp += sizeof(char)*8;
+    //Se puede hacer porque es un string (\0)
+    nick = temp;
+    temp += sizeof(char) * 8;
 
-    memcpy(&message, &temp, sizeof(char)*80);
-
+    //Se puede hacer porque es un string (\0)
+    message = temp;
 
     return 0;
 }
+
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

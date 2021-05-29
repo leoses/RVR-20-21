@@ -55,18 +55,12 @@ void ChatServer::do_messages()
 
     while (true)
     {
-        /*
-         * NOTA: los clientes están definidos con "smart pointers", es necesario
-         * crear un unique_ptr con el objeto socket recibido y usar std::move
-         * para añadirlo al vector
-         */
-
-        //Esperamos recibir un mensaje de cualquier socket
         ChatMessage cm;
         Socket *s;
 
-        //Esperamos a recibir un objeto serializable desde cualquier socket
+        //Esperamos recibir un mensaje de cualquier socket
         socket.recv(cm, s);
+
 
         //Recibir Mensajes en y en función del tipo de mensaje
         // - LOGIN: Añadir al vector clients
@@ -75,39 +69,52 @@ void ChatServer::do_messages()
         switch (cm.type)
         {
         case ChatMessage::LOGIN:
+        {
             /* code */
             std::cout << "Jugador conectado: " << cm.nick << "\n";
             //Lo añadimos a la lista de clientes convirtiendo el socket en un unique_ptr y usando move
-            clients.push_back(std::move(std::make_unique<Socket>(s)));
+            clients.push_back(std::move(std::make_unique<Socket>(*s)));
             break;
-
+        }
         case ChatMessage::LOGOUT:
+        {
             /* code */
-            auto it  = clients.begin();
+            auto it = clients.begin();
 
-            while(it != clients.end() && (*it).get() != s)++it;
+            while (it != clients.end() && (**it !=  *s))
+                ++it;
 
-            if(it == clients.end()) std::cout << "El jugador ya se había desconectado previamente\n";
-            else{
+            if (it == clients.end())
+                std::cout << "El jugador ya se había desconectado previamente\n";
+            else
+            {
                 std::cout << "Jugador desconectado: " << cm.nick << "\n";
-                clients.erase(it); //Lo sacamos del vector
-                Socket* delSock = (*it).release(); //Eliminamos la pertenencia del socket de dicho unique_ptr
-                delete delSock; //Borramos el socket
+                clients.erase(it);                 //Lo sacamos del vector
+                Socket *delSock = (*it).release(); //Eliminamos la pertenencia del socket de dicho unique_ptr
+                delete delSock;                    //Borramos el socket
             }
+            break;
+        }
+        case ChatMessage::MESSAGE:
+        {
+            //Reenviar el mensaje a todos los clientes menos a si mismo
+            for (auto it = clients.begin(); it != clients.end(); it++)
+			{
+				if (**it !=  *s)
+				{
+					socket.send(cm, **it);
+				}
+			}
 
             break;
-        case ChatMessage::MESSAGE:
-            //Reenviar el mensaje a todos los clientes menos a si mismo
-            for(int i =0; i < clients.size(); i++)
-                if(clients[i].get() != s) clients[i].get()->send(cm, *s);
-            break;
-        
+        }
         default:
-            std::cerr << "Something went wrong bro\n";
+            std::cerr << "UNKOWNK MESSAGE RECIEVED\n";
             break;
         }
     }
 }
+
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

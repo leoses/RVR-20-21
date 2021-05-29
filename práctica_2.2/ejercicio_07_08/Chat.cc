@@ -58,13 +58,6 @@ void ChatServer::do_messages()
 
     while (true)
     {
-        /*
-         * NOTA: los clientes están definidos con "smart pointers", es necesario
-         * crear un unique_ptr con el objeto socket recibido y usar std::move
-         * para añadirlo al vector
-         */
-
-
         ChatMessage cm;
         Socket *s;
 
@@ -82,7 +75,6 @@ void ChatServer::do_messages()
         {
             /* code */
             std::cout << "Jugador conectado: " << cm.nick << "\n";
-            s->bind();
             //Lo añadimos a la lista de clientes convirtiendo el socket en un unique_ptr y usando move
             clients.push_back(std::move(std::make_unique<Socket>(*s)));
             break;
@@ -92,7 +84,7 @@ void ChatServer::do_messages()
             /* code */
             auto it = clients.begin();
 
-            while (it != clients.end() && (*it).get() != s)
+            while (it != clients.end() && (**it !=  *s))
                 ++it;
 
             if (it == clients.end())
